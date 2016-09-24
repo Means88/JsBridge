@@ -1,4 +1,4 @@
-package com.github.lzyzsd.jsbridge;
+package com.github.means88.jsbridge;
 
 import android.content.Context;
 import android.util.Base64;
@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class BridgeUtil {
 	final static String YY_OVERRIDE_SCHEMA = "yy://";
@@ -64,14 +65,26 @@ public class BridgeUtil {
 	public static void webViewLoadJs(WebView view, String url){
 		String js = "var newscript = document.createElement(\"script\");";
 		js += "newscript.src=\"" + url + "\";";
-		js += "document.scripts[0].parentNode.insertBefore(newscript,document.scripts[0]);";
+		js += "document.head.appendChild(newscript);";
 		view.loadUrl("javascript:" + js);
+	}
+
+	public static void webViewLoadJs(WebView view, List<String> urls) {
+		for (String url : urls) {
+			webViewLoadJs(view, url);
+		}
 	}
 
     public static void webViewLoadLocalJs(WebView view, String path){
         String jsContent = assetFile2Str(view.getContext(), path);
         view.loadUrl("javascript:" + jsContent);
     }
+
+	public static void webViewLoadLocalJs(WebView view, List<String> paths){
+		for (String path : paths) {
+			webViewLoadLocalJs(view, path);
+		}
+	}
 	
 	public static String assetFile2Str(Context c, String urlStr){
 		InputStream in = null;

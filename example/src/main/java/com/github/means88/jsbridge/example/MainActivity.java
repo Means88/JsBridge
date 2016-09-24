@@ -1,4 +1,4 @@
-package com.github.lzyzsd.jsbridge.example;
+package com.github.means88.jsbridge.example;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,10 +11,10 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.widget.Button;
 
-import com.github.lzyzsd.jsbridge.BridgeHandler;
-import com.github.lzyzsd.jsbridge.BridgeWebView;
-import com.github.lzyzsd.jsbridge.CallBackFunction;
-import com.github.lzyzsd.jsbridge.DefaultHandler;
+import com.github.means88.jsbridge.BridgeHandler;
+import com.github.means88.jsbridge.BridgeWebView;
+import com.github.means88.jsbridge.CallBackFunction;
+import com.github.means88.jsbridge.DefaultHandler;
 import com.google.gson.Gson;
 
 public class MainActivity extends Activity implements OnClickListener {
@@ -49,6 +49,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		button = (Button) findViewById(R.id.button);
 
 		button.setOnClickListener(this);
+
+		webView.preloadJsFiles().add("1.js");
 
 		webView.setDefaultHandler(new DefaultHandler());
 

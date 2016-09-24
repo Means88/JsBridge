@@ -1,4 +1,4 @@
-package com.github.lzyzsd.jsbridge;
+package com.github.means88.jsbridge;
 
 import org.json.JSONArray;
 import org.json.JSONException;

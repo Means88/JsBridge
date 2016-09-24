@@ -1,4 +1,4 @@
-package com.github.lzyzsd.jsbridge;
+package com.github.means88.jsbridge;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -23,7 +23,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 
 	private final String TAG = "BridgeWebView";
 
-	public static final String toLoadJs = "WebViewJavascriptBridge.js";
+	List<String> toLoadJs;
 	Map<String, CallBackFunction> responseCallbacks = new HashMap<String, CallBackFunction>();
 	Map<String, BridgeHandler> messageHandlers = new HashMap<String, BridgeHandler>();
 	BridgeHandler defaultHandler = new DefaultHandler();
@@ -65,6 +65,14 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
        this.defaultHandler = handler;
 	}
 
+	/**
+	 * JavaScript files to load
+	 * @return the list
+     */
+	public List<String> preloadJsFiles() {
+		return this.toLoadJs;
+	}
+
     private void init() {
 		this.setVerticalScrollBarEnabled(false);
 		this.setHorizontalScrollBarEnabled(false);
@@ -73,9 +81,11 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
             WebView.setWebContentsDebuggingEnabled(true);
         }
 		this.setWebViewClient(generateBridgeWebViewClient());
+		this.toLoadJs = new ArrayList<>();
+		this.toLoadJs.add("WebViewJavascriptBridge.js");
 	}
 
-    protected BridgeWebViewClient generateBridgeWebViewClient() {
+	protected BridgeWebViewClient generateBridgeWebViewClient() {
         return new BridgeWebViewClient(this);
     }
 

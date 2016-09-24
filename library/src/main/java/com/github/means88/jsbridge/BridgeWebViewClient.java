@@ -1,4 +1,4 @@
-package com.github.lzyzsd.jsbridge;
+package com.github.means88.jsbridge;
 
 import android.graphics.Bitmap;
 import android.webkit.WebView;
@@ -45,8 +45,8 @@ public class BridgeWebViewClient extends WebViewClient {
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
 
-        if (BridgeWebView.toLoadJs != null) {
-            BridgeUtil.webViewLoadLocalJs(view, BridgeWebView.toLoadJs);
+        if (webView.preloadJsFiles() != null) {
+            BridgeUtil.webViewLoadLocalJs(view, webView.preloadJsFiles());
         }
 
         //
