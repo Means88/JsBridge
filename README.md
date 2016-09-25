@@ -24,13 +24,13 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.lzyzsd:jsbridge:1.0.4'
+    compile 'com.github.means88:jsbridge:1.1.0'
 }
 ```
 
 ## Use it in Java
 
-add com.github.lzyzsd.jsbridge.BridgeWebView to your layout, it is inherited from WebView.
+add com.github.means88.jsbridge.BridgeWebView to your layout, it is inherited from WebView.
 
 ### Register a Java handler function so that js can call
 
