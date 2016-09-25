@@ -1,3 +1,5 @@
+(function() {
+
 var CustomJavascript = window.CustomJavascript = {
 
     testDiv: function () {
@@ -38,6 +40,9 @@ var CustomJavascript = window.CustomJavascript = {
 
 };
 
-var readyEvent = document.createEvent('Events');
-readyEvent.initEvent('CustomJavascriptReady');
-document.dispatchEvent(readyEvent);
+window.WebViewJavascriptBridge = new WebViewJavascriptBridgeClass({
+    CUSTOM_PROTOCOL_SCHEMA: 'custom'
+});
+
+
+})();

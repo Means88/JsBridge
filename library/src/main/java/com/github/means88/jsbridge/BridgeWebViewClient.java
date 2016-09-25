@@ -1,6 +1,7 @@
 package com.github.means88.jsbridge;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -25,10 +26,10 @@ public class BridgeWebViewClient extends WebViewClient {
             e.printStackTrace();
         }
 
-        if (url.startsWith(BridgeUtil.YY_RETURN_DATA)) { // 如果是返回数据
+        if (url.startsWith(webView.bridgeUtil.getOverrideSchema() + "://" + webView.bridgeUtil.getReturnData())) { // 如果是返回数据
             webView.handlerReturnData(url);
             return true;
-        } else if (url.startsWith(BridgeUtil.YY_OVERRIDE_SCHEMA)) { //
+        } else if (url.startsWith(webView.bridgeUtil.getOverrideSchema() + "://")) { //
             webView.flushMessageQueue();
             return true;
         } else {
@@ -46,7 +47,7 @@ public class BridgeWebViewClient extends WebViewClient {
         super.onPageFinished(view, url);
 
         if (webView.preloadJsFiles() != null) {
-            BridgeUtil.webViewLoadLocalJs(view, webView.preloadJsFiles());
+            webView.bridgeUtil.webViewLoadLocalJs(view, webView.preloadJsFiles());
         }
 
         //

@@ -2,17 +2,16 @@ package com.github.means88.jsbridge;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import com.github.means88.library.R;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +26,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 	Map<String, CallBackFunction> responseCallbacks = new HashMap<String, CallBackFunction>();
 	Map<String, BridgeHandler> messageHandlers = new HashMap<String, BridgeHandler>();
 	BridgeHandler defaultHandler = new DefaultHandler();
+	BridgeUtil bridgeUtil;
 
 	private List<Message> startupMessage = new ArrayList<Message>();
 
@@ -42,11 +42,13 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 
 	public BridgeWebView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+        initSchema(attrs);
 		init();
 	}
 
 	public BridgeWebView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+        initSchema(attrs);
 		init();
 	}
 
@@ -82,17 +84,30 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
         }
 		this.setWebViewClient(generateBridgeWebViewClient());
 		this.toLoadJs = new ArrayList<>();
-		this.toLoadJs.add("WebViewJavascriptBridge.js");
+		this.toLoadJs.add("WebViewJavascriptBridge.build.js");
+		if (this.bridgeUtil == null) {
+			this.bridgeUtil = new BridgeUtil();
+		}
 	}
+
+    private void initSchema(AttributeSet attrs) {
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.BridgeWebView);
+        String schema = typedArray.getString(R.styleable.BridgeWebView_schema);
+        if (schema == null) {
+            schema = "schema";
+        }
+        this.bridgeUtil = new BridgeUtil(schema);
+        typedArray.recycle();
+    }
 
 	protected BridgeWebViewClient generateBridgeWebViewClient() {
         return new BridgeWebViewClient(this);
     }
 
 	void handlerReturnData(String url) {
-		String functionName = BridgeUtil.getFunctionFromReturnUrl(url);
+		String functionName = bridgeUtil.getFunctionFromReturnUrl(url);
 		CallBackFunction f = responseCallbacks.get(functionName);
-		String data = BridgeUtil.getDataFromReturnUrl(url);
+		String data = bridgeUtil.getDataFromReturnUrl(url);
 		if (f != null) {
 			f.onCallBack(data);
 			responseCallbacks.remove(functionName);
@@ -116,7 +131,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 			m.setData(data);
 		}
 		if (responseCallback != null) {
-			String callbackStr = String.format(BridgeUtil.CALLBACK_ID_FORMAT, ++uniqueId + (BridgeUtil.UNDERLINE_STR + SystemClock.currentThreadTimeMillis()));
+			String callbackStr = String.format(bridgeUtil.getCallbackIdFormat(), ++uniqueId + (bridgeUtil.getUnderlineStr() + SystemClock.currentThreadTimeMillis()));
 			responseCallbacks.put(callbackStr, responseCallback);
 			m.setCallbackId(callbackStr);
 		}
@@ -139,7 +154,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
         //escape special characters for json string
         messageJson = messageJson.replaceAll("(\\\\)([^utrn])", "\\\\\\\\$1$2");
         messageJson = messageJson.replaceAll("(?<=[^\\\\])(\")", "\\\\\"");
-        String javascriptCommand = String.format(BridgeUtil.JS_HANDLE_MESSAGE_FROM_JAVA, messageJson);
+        String javascriptCommand = String.format(bridgeUtil.getJsHandleMessageFromJava(), messageJson);
         if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
             this.loadUrl(javascriptCommand);
         }
@@ -147,7 +162,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 
 	void flushMessageQueue() {
 		if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
-			loadUrl(BridgeUtil.JS_FETCH_QUEUE_FROM_JAVA, new CallBackFunction() {
+			loadUrl(bridgeUtil.getJsFetchQueueFromJava(), new CallBackFunction() {
 
 				@Override
 				public void onCallBack(String data) {
@@ -211,7 +226,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 
 	public void loadUrl(String jsUrl, CallBackFunction returnCallback) {
 		this.loadUrl(jsUrl);
-		responseCallbacks.put(BridgeUtil.parseFunctionName(jsUrl), returnCallback);
+		responseCallbacks.put(bridgeUtil.parseFunctionName(jsUrl), returnCallback);
 	}
 
 	/**

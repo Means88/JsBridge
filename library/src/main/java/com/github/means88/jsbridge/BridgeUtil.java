@@ -1,7 +1,6 @@
 package com.github.means88.jsbridge;
 
 import android.content.Context;
-import android.util.Base64;
 import android.webkit.WebView;
 
 import java.io.BufferedReader;
@@ -11,30 +10,105 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 public class BridgeUtil {
-	final static String YY_OVERRIDE_SCHEMA = "yy://";
-	final static String YY_RETURN_DATA = YY_OVERRIDE_SCHEMA + "return/";//格式为   yy://return/{function}/returncontent
-	final static String YY_FETCH_QUEUE = YY_RETURN_DATA + "_fetchQueue/";
-	final static String EMPTY_STR = "";
-	final static String UNDERLINE_STR = "_";
-	final static String SPLIT_MARK = "/";
-	
-	final static String CALLBACK_ID_FORMAT = "JAVA_CB_%s";
-	final static String JS_HANDLE_MESSAGE_FROM_JAVA = "javascript:WebViewJavascriptBridge._handleMessageFromNative('%s');";
-	final static String JS_FETCH_QUEUE_FROM_JAVA = "javascript:WebViewJavascriptBridge._fetchQueue();";
-	public final static String JAVASCRIPT_STR = "javascript:";
-	
-	public static String parseFunctionName(String jsUrl){
+	private String overrideSchema = "schema";
+    private String returnData = "return/";//格式为   schema://return/{function}/returncontent
+    private String emptyStr = "";
+    private String underlineStr = "_";
+    private String splitMark = "/";
+
+    private String callbackIdFormat = "JAVA_CB_%s";
+    private String jsHandleMessageFromJava = "javascript:WebViewJavascriptBridge._handleMessageFromNative('%s');";
+    private String jsFetchQueueFromJava = "javascript:WebViewJavascriptBridge._fetchQueue();";
+	public final String JAVASCRIPT_STR = "javascript:";
+
+	public BridgeUtil() {
+
+	}
+
+	public BridgeUtil(String prefix) {
+        setOverrideSchema(prefix);
+	}
+
+    public String getOverrideSchema() {
+        return overrideSchema;
+    }
+
+    public void setOverrideSchema(String overrideSchema) {
+        this.overrideSchema = overrideSchema;
+    }
+
+    public String getReturnData() {
+        return returnData;
+    }
+
+    public void setReturnData(String returnData) {
+        this.returnData = returnData;
+    }
+
+    public String getFetchQueue() {
+        return overrideSchema + returnData + "_fetchQueue/";
+    }
+
+    public String getEmptyStr() {
+        return emptyStr;
+    }
+
+    public void setEmptyStr(String emptyStr) {
+        this.emptyStr = emptyStr;
+    }
+
+    public String getUnderlineStr() {
+        return underlineStr;
+    }
+
+    public void setUnderlineStr(String underlineStr) {
+        this.underlineStr = underlineStr;
+    }
+
+    public String getSplitMark() {
+        return splitMark;
+    }
+
+    public void setSplitMark(String splitMark) {
+        this.splitMark = splitMark;
+    }
+
+    public String getCallbackIdFormat() {
+        return callbackIdFormat;
+    }
+
+    public void setCallbackIdFormat(String callbackIdFormat) {
+        this.callbackIdFormat = callbackIdFormat;
+    }
+
+    public String getJsHandleMessageFromJava() {
+        return jsHandleMessageFromJava;
+    }
+
+    public void setJsHandleMessageFromJava(String jsHandleMessageFromJava) {
+        this.jsHandleMessageFromJava = jsHandleMessageFromJava;
+    }
+
+    public String getJsFetchQueueFromJava() {
+        return jsFetchQueueFromJava;
+    }
+
+    public void setJsFetchQueueFromJava(String jsFetchQueueFromJava) {
+        this.jsFetchQueueFromJava = jsFetchQueueFromJava;
+    }
+
+    public String parseFunctionName(String jsUrl){
 		return jsUrl.replace("javascript:WebViewJavascriptBridge.", "").replaceAll("\\(.*\\);", "");
 	}
 	
 	
-	public static String getDataFromReturnUrl(String url) {
-		if(url.startsWith(YY_FETCH_QUEUE)) {
-			return url.replace(YY_FETCH_QUEUE, EMPTY_STR);
+	public String getDataFromReturnUrl(String url) {
+		if(url.startsWith(getFetchQueue())) {
+			return url.replace(getFetchQueue(), emptyStr);
 		}
 		
-		String temp = url.replace(YY_RETURN_DATA, EMPTY_STR);
-		String[] functionAndData = temp.split(SPLIT_MARK);
+		String temp = url.replace(overrideSchema + "://" + returnData, emptyStr);
+		String[] functionAndData = temp.split(splitMark);
 
         if(functionAndData.length >= 2) {
             StringBuilder sb = new StringBuilder();
@@ -46,9 +120,9 @@ public class BridgeUtil {
 		return null;
 	}
 
-	public static String getFunctionFromReturnUrl(String url) {
-		String temp = url.replace(YY_RETURN_DATA, EMPTY_STR);
-		String[] functionAndData = temp.split(SPLIT_MARK);
+	public String getFunctionFromReturnUrl(String url) {
+		String temp = url.replace(overrideSchema + "://" + returnData, emptyStr);
+		String[] functionAndData = temp.split(splitMark);
 		if(functionAndData.length >= 1){
 			return functionAndData[0];
 		}
@@ -62,31 +136,31 @@ public class BridgeUtil {
 	 * @param view
 	 * @param url
 	 */
-	public static void webViewLoadJs(WebView view, String url){
+	public void webViewLoadJs(WebView view, String url){
 		String js = "var newscript = document.createElement(\"script\");";
 		js += "newscript.src=\"" + url + "\";";
 		js += "document.head.appendChild(newscript);";
 		view.loadUrl("javascript:" + js);
 	}
 
-	public static void webViewLoadJs(WebView view, List<String> urls) {
+	public void webViewLoadJs(WebView view, List<String> urls) {
 		for (String url : urls) {
 			webViewLoadJs(view, url);
 		}
 	}
 
-    public static void webViewLoadLocalJs(WebView view, String path){
+    public void webViewLoadLocalJs(WebView view, String path){
         String jsContent = assetFile2Str(view.getContext(), path);
         view.loadUrl("javascript:" + jsContent);
     }
 
-	public static void webViewLoadLocalJs(WebView view, List<String> paths){
+	public void webViewLoadLocalJs(WebView view, List<String> paths){
 		for (String path : paths) {
 			webViewLoadLocalJs(view, path);
 		}
 	}
 	
-	public static String assetFile2Str(Context c, String urlStr){
+	public String assetFile2Str(Context c, String urlStr){
 		InputStream in = null;
 		try{
 			in = c.getAssets().open(urlStr);

@@ -148,6 +148,24 @@ If WebViewJavascriptBridge does not exit, you can listen to WebViewJavascriptBri
 
 ```
 
+## Custom Schema
+
+Add attribute schema in WebView
+```xml
+<com.github.means88.jsbridge.BridgeWebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        means88:schema="custom" />
+```
+
+Add an JavaScript file in assert
+```js
+window.WebViewJavascriptBridge = new WebViewJavascriptBridgeClass({
+    CUSTOM_PROTOCOL_SCHEMA: 'custom'
+});
+```
+
 ## License
 
 This project is licensed under the terms of the MIT license.

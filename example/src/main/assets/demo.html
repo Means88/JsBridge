@@ -17,11 +17,11 @@
   </body>
   <script>
     function connectWebViewJavascriptBridge (callback) {
-      if (window.CustomJavascript) {
+      if (typeof(WebViewJavascriptBridge) != "undefined") {
         callback(WebViewJavascriptBridge)
       } else {
         document.addEventListener(
-          'CustomJavascriptReady',
+          'WebViewJavascriptBridgeReady',
           function () {
             callback(WebViewJavascriptBridge)
           },
@@ -29,7 +29,6 @@
         );
       }
     }
-
     connectWebViewJavascriptBridge(function(bridge) {
       bridge.init(function(message, responseCallback) {
         console.log('JS got a message', message);
@@ -37,9 +36,8 @@
           'Javascript Responds': '测试中文!'
         };
         console.log('JS responding with', data);
-          responseCallback(data);
-        });
-
+        responseCallback(data);
+      });
       bridge.registerHandler("functionInJs", function(data, responseCallback) {
         document.getElementById("show").innerHTML = ("data from Java: = " + data);
         var responseData = "Javascript Says Right back aka!";
