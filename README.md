@@ -161,9 +161,15 @@ Add attribute schema in WebView
 
 Add an JavaScript file in assert
 ```js
+// 1.js
 window.WebViewJavascriptBridge = new WebViewJavascriptBridgeClass({
     CUSTOM_PROTOCOL_SCHEMA: 'custom'
 });
+```
+
+Add JavaScript file using in Java
+```java
+webView.preloadJsFiles().add("1.js");
 ```
 
 ## License
