@@ -54,27 +54,13 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		webView.setDefaultHandler(new DefaultHandler());
 
-		webView.setWebChromeClient(new WebChromeClient() {
-
-			@SuppressWarnings("unused")
-			public void openFileChooser(ValueCallback<Uri> uploadMsg, String AcceptType, String capture) {
-				this.openFileChooser(uploadMsg);
-			}
-
-			@SuppressWarnings("unused")
-			public void openFileChooser(ValueCallback<Uri> uploadMsg, String AcceptType) {
-				this.openFileChooser(uploadMsg);
-			}
-
-			public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-				mUploadMessage = uploadMsg;
-				pickFile();
-			}
-		});
+		webView.addToRegexWhiteList("^file:///android_asset(/.*)?");
 
 		webView.loadUrl("file:///android_asset/demo.html");
 
-		webView.registerHandler("submitFromWeb", new BridgeHandler() {
+		Log.e("url", webView.getUrl());
+
+		webView.registerHandler("custom", new BridgeHandler() {
 
 			@Override
 			public void handler(String data, CallBackFunction function) {
@@ -90,7 +76,7 @@ public class MainActivity extends Activity implements OnClickListener {
         user.location = location;
         user.name = "大头鬼";
 
-        webView.callHandler("functionInJs", new Gson().toJson(user), new CallBackFunction() {
+        webView.callHandler("customHandler", new Gson().toJson(user), new CallBackFunction() {
             @Override
             public void onCallBack(String data) {
 
@@ -122,7 +108,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (button.equals(v)) {
-            webView.callHandler("functionInJs", "data from Java", new CallBackFunction() {
+            webView.callHandler("customHandler", "data from Java", new CallBackFunction() {
 
 				@Override
 				public void onCallBack(String data) {

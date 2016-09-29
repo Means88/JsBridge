@@ -1,48 +1,90 @@
 <html>
-  <head>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type">
-      <title>
-        js调用java
-      </title>
-  </head>
-  <body>
-    <xmp id="show"></xmp>
-    <xmp id="init"></xmp>
-    <input type="text" id="text1" value="用户名(username)" />
-    <input type="text" id="text2" value="password" />
-    <input type="button" id="enter" value="发消息给Native" onclick="CustomJavascript.testClick();"/>
-    <input type="button" id="enter1" value="调用Native方法" onclick="CustomJavascript.testClick1();"/>
-    <input type="button" id="enter2" value="显示html" onclick="CustomJavascript.testDiv();" />
-    <input type="file" value="打开文件" />
-  </body>
-  <script>
-    function connectWebViewJavascriptBridge (callback) {
-      if (typeof(WebViewJavascriptBridge) != "undefined") {
-        callback(WebViewJavascriptBridge)
-      } else {
-        document.addEventListener(
-          'WebViewJavascriptBridgeReady',
-          function () {
-            callback(WebViewJavascriptBridge)
-          },
-          false
-        );
-      }
-    }
-    connectWebViewJavascriptBridge(function(bridge) {
-      bridge.init(function(message, responseCallback) {
-        console.log('JS got a message', message);
-        var data = {
-          'Javascript Responds': '测试中文!'
-        };
-        console.log('JS responding with', data);
-        responseCallback(data);
-      });
-      bridge.registerHandler("functionInJs", function(data, responseCallback) {
-        document.getElementById("show").innerHTML = ("data from Java: = " + data);
-        var responseData = "Javascript Says Right back aka!";
-        responseCallback(responseData);
-      });
-    })
-  </script>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>
+    js调用java
+  </title>
+  <script src="http://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+
+<body>
+<div id="show">
+</div>
+<div id="init">
+</div>
+<a href="http://www.baidu.com/">baidu</a>
+<input type="button" id="enter" value="发消息给Native" onclick="testClick();"/>
+<div type="button" id="button" style="width: 100px; height: 100px; background: #000;">long click</div>
+</body>
+<script>
+        var cnt = 0;
+        function testDiv() {
+            document.getElementById("show").innerHTML = document.getElementsByTagName("html")[0].innerHTML;
+        }
+
+        function testClick() {
+            $("#enter").val(cnt++);
+            var data = {id: 1, content: "发给Java一条消息"};
+            // window.WebViewJavascriptBridge.send(
+            //     data
+            //     , function(responseData) {
+            //         document.getElementById("show").innerHTML = "repsonseData from java, data = " + responseData
+            //     }
+            // );
+            console.log('before');
+            window.WebViewJavascriptBridge._doSend = function (message, responseCallback) {
+              console.log('doSend');
+              if (responseCallback) {
+                const callbackId = 'cb_' + (this.uniqueId++) + '_' + new Date().getTime();
+                this.responseCallbacks[callbackId] = responseCallback;
+                message.callbackId = callbackId;
+              }
+              console.log('before sendMessageQueue');
+              this.sendMessageQueue.push(message);
+              console.log('after sendMessageQueue');
+              this.messagingIframe.src = this.CUSTOM_PROTOCOL_SCHEMA + '://' + this.QUEUE_HAS_MESSAGE;
+              console.log(this.CUSTOM_PROTOCOL_SCHEMA + '://' + this.QUEUE_HAS_MESSAGE);
+              console.log('after set src');
+            }
+            window.WebViewJavascriptBridge.callHandler(
+              'custom',
+              data,
+              function(responseData) {
+                  document.getElementById("show").innerHTML = "repsonseData from java, data = " + responseData
+              }
+            );
+
+            console.log('after');
+        }
+
+        /**
+         * JSBridge 连接成功后调用 callback
+         * callback 参数为 bridge 对象
+         */
+        function connectWebViewJavascriptBridge(callback) {
+            if (window.WebViewJavascriptBridge) {
+                callback(WebViewJavascriptBridge)
+            } else {
+                document.addEventListener(
+                    'WebViewJavascriptBridgeReady'
+                    , function() {
+                        callback(WebViewJavascriptBridge)
+                    },
+                    false
+                );
+            }
+        }
+
+        connectWebViewJavascriptBridge(function(bridge) {
+            bridge.init(function(data, callback) {
+                document.getElementById("show").innerHTML = data;
+                callback("success!");
+            });
+            bridge.registerHandler("customHandler", function(data, callback) {
+              document.getElementById("show").innerHTML = data;
+              callback("custom success!");
+            });
+        })
+
+</script>
 </html>

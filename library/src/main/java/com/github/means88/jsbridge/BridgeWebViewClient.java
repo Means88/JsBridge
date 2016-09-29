@@ -1,7 +1,6 @@
 package com.github.means88.jsbridge;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -45,6 +44,9 @@ public class BridgeWebViewClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
+        if (!isJsBridgeEnabled()) {
+            return;
+        }
 
         if (webView.preloadJsFiles() != null) {
             webView.bridgeUtil.webViewLoadLocalJs(view, webView.preloadJsFiles());
@@ -62,5 +64,17 @@ public class BridgeWebViewClient extends WebViewClient {
     @Override
     public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
+    }
+
+    private boolean isJsBridgeEnabled() {
+        if (webView.getJsBridgeRegexWhiteList().size() == 0) {
+            return true;
+        }
+        for (String regex : webView.getJsBridgeRegexWhiteList()) {
+            if (webView.getUrl().matches(regex)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -14,14 +14,17 @@ import com.github.means88.library.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 
 	private final String TAG = "BridgeWebView";
 
+	Set<String> jsBridgeRegexWhiteList;
 	List<String> toLoadJs;
 	Map<String, CallBackFunction> responseCallbacks = new HashMap<String, CallBackFunction>();
 	Map<String, BridgeHandler> messageHandlers = new HashMap<String, BridgeHandler>();
@@ -83,6 +86,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
             WebView.setWebContentsDebuggingEnabled(true);
         }
 		this.setWebViewClient(generateBridgeWebViewClient());
+		this.jsBridgeRegexWhiteList = new HashSet<>();
 		this.toLoadJs = new ArrayList<>();
 		this.toLoadJs.add("WebViewJavascriptBridge.build.js");
 		if (this.bridgeUtil == null) {
@@ -113,6 +117,18 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 			responseCallbacks.remove(functionName);
 			return;
 		}
+	}
+
+	public void addToRegexWhiteList(String url) {
+		jsBridgeRegexWhiteList.add(url);
+	}
+
+	public void deleteFromRegexWhiteList(String url) {
+		jsBridgeRegexWhiteList.remove(url);
+	}
+
+	public Set<String> getJsBridgeRegexWhiteList() {
+		return jsBridgeRegexWhiteList;
 	}
 
 	@Override
