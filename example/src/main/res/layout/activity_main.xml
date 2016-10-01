@@ -18,6 +18,6 @@
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        means88:schema="custom" />
+        means88:schema="XueBan3" />
 
 </LinearLayout>

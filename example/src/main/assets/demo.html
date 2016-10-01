@@ -24,31 +24,9 @@
 
         function testClick() {
             $("#enter").val(cnt++);
-            var data = {id: 1, content: "发给Java一条消息"};
-            // window.WebViewJavascriptBridge.send(
-            //     data
-            //     , function(responseData) {
-            //         document.getElementById("show").innerHTML = "repsonseData from java, data = " + responseData
-            //     }
-            // );
-            console.log('before');
-            window.WebViewJavascriptBridge._doSend = function (message, responseCallback) {
-              console.log('doSend');
-              if (responseCallback) {
-                const callbackId = 'cb_' + (this.uniqueId++) + '_' + new Date().getTime();
-                this.responseCallbacks[callbackId] = responseCallback;
-                message.callbackId = callbackId;
-              }
-              console.log('before sendMessageQueue');
-              this.sendMessageQueue.push(message);
-              console.log('after sendMessageQueue');
-              this.messagingIframe.src = this.CUSTOM_PROTOCOL_SCHEMA + '://' + this.QUEUE_HAS_MESSAGE;
-              console.log(this.CUSTOM_PROTOCOL_SCHEMA + '://' + this.QUEUE_HAS_MESSAGE);
-              console.log('after set src');
-            }
             window.WebViewJavascriptBridge.callHandler(
               'custom',
-              data,
+              'https://avatars1.githubusercontent.com/u/5810331?v=3&s=466',
               function(responseData) {
                   document.getElementById("show").innerHTML = "repsonseData from java, data = " + responseData
               }

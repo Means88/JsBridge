@@ -34,7 +34,7 @@ public class BridgeUtil {
     }
 
     public void setOverrideSchema(String overrideSchema) {
-        this.overrideSchema = overrideSchema;
+        this.overrideSchema = overrideSchema.toLowerCase();
     }
 
     public String getReturnData() {
@@ -46,7 +46,7 @@ public class BridgeUtil {
     }
 
     public String getFetchQueue() {
-        return overrideSchema + returnData + "_fetchQueue/";
+        return overrideSchema + "://" + returnData + "_fetchQueue/";
     }
 
     public String getEmptyStr() {
@@ -103,13 +103,12 @@ public class BridgeUtil {
 	
 	
 	public String getDataFromReturnUrl(String url) {
-		if(url.startsWith(getFetchQueue())) {
+        if(url.startsWith(getFetchQueue())) {
 			return url.replace(getFetchQueue(), emptyStr);
 		}
 		
 		String temp = url.replace(overrideSchema + "://" + returnData, emptyStr);
 		String[] functionAndData = temp.split(splitMark);
-
         if(functionAndData.length >= 2) {
             StringBuilder sb = new StringBuilder();
             for (int i = 1; i < functionAndData.length; i++) {

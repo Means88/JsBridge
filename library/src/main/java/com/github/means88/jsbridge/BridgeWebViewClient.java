@@ -24,7 +24,6 @@ public class BridgeWebViewClient extends WebViewClient {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
         if (url.startsWith(webView.bridgeUtil.getOverrideSchema() + "://" + webView.bridgeUtil.getReturnData())) { // 如果是返回数据
             webView.handlerReturnData(url);
             return true;

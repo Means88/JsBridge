@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
 import android.widget.Button;
 
 import com.github.means88.jsbridge.BridgeHandler;
