@@ -1,68 +1,30 @@
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
 <head>
-  <meta content="text/html; charset=utf-8" http-equiv="content-type">
-  <title>
-    js调用java
-  </title>
-  <script src="http://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+  <meta name="viewport" content="width=device-width" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>搞事情</title>
 </head>
-
 <body>
-<div id="show">
-</div>
-<div id="init">
-</div>
-<a href="http://www.baidu.com/">baidu</a>
-<input type="button" id="enter" value="发消息给Native" onclick="testClick();"/>
-<div type="button" id="button" style="width: 100px; height: 100px; background: #000;">long click</div>
+<div id="main"></div>
+<script src="http://cdn.bootcss.com/babel-core/5.8.34/browser.js"></script>
+<script src="http://cdn.bootcss.com/jquery/1.12.4/jquery.js"></script>
+<script src="http://cdn.bootcss.com/react/15.4.0-rc.3/react.js"></script>
+<script src="http://cdn.bootcss.com/react/15.4.0-rc.3/react-dom.js"></script>
+<script src="http://cdn.bootcss.com/react-router/4.0.0-alpha.5/react-router.js"></script>
+<script src="http://cdn.bootcss.com/redux/3.6.0/redux.js"></script>
+<script src="http://cdn.bootcss.com/react-redux/4.4.5/react-redux.js"></script>
+<script type="text/babel">
+      ReactDOM.render(
+        <a id="element" href="#" onClick={() => {
+           ReactDOM.render(
+             <p>???</p>,
+             document.getElementById('element')
+           );
+         }}>Hello world</a>,
+        document.getElementById('main')
+      );
+    </script>
 </body>
-<script>
-        var cnt = 0;
-        function testDiv() {
-            document.getElementById("show").innerHTML = document.getElementsByTagName("html")[0].innerHTML;
-        }
-
-        function testClick() {
-            $("#enter").val(cnt++);
-            window.WebViewJavascriptBridge.callHandler(
-              'custom',
-              'https://avatars1.githubusercontent.com/u/5810331?v=3&s=466',
-              function(responseData) {
-                  document.getElementById("show").innerHTML = "repsonseData from java, data = " + responseData
-              }
-            );
-
-            console.log('after');
-        }
-
-        /**
-         * JSBridge 连接成功后调用 callback
-         * callback 参数为 bridge 对象
-         */
-        function connectWebViewJavascriptBridge(callback) {
-            if (window.WebViewJavascriptBridge) {
-                callback(WebViewJavascriptBridge)
-            } else {
-                document.addEventListener(
-                    'WebViewJavascriptBridgeReady'
-                    , function() {
-                        callback(WebViewJavascriptBridge)
-                    },
-                    false
-                );
-            }
-        }
-
-        connectWebViewJavascriptBridge(function(bridge) {
-            bridge.init(function(data, callback) {
-                document.getElementById("show").innerHTML = data;
-                callback("success!");
-            });
-            bridge.registerHandler("customHandler", function(data, callback) {
-              document.getElementById("show").innerHTML = data;
-              callback("custom success!");
-            });
-        })
-
-</script>
 </html>
