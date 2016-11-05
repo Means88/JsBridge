@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.github.means88.jsbridge.BridgeHandler;
 import com.github.means88.jsbridge.BridgeWebView;
@@ -43,7 +45,15 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-        webView = (BridgeWebView) findViewById(R.id.webView);
+		webView = new BridgeWebView(this, "xueban3");
+
+		webView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+		ViewGroup layout = (LinearLayout) findViewById(R.id.root);
+
+		layout.addView(webView);
+
+//        webView = (BridgeWebView) findViewById(R.id.webView);
 
 		button = (Button) findViewById(R.id.button);
 

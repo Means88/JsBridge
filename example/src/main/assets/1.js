@@ -1,3 +1,3 @@
 window.WebViewJavascriptBridge = new WebViewJavascriptBridgeClass({
-    CUSTOM_PROTOCOL_SCHEMA: 'XueBan3'
+    CUSTOM_PROTOCOL_SCHEMA: 'xueban3'
 });

@@ -55,6 +55,12 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 		init();
 	}
 
+	public BridgeWebView(Context context, String schema) {
+		super(context);
+		initSchema(schema);
+		init();
+	}
+
 	public BridgeWebView(Context context) {
 		super(context);
 		init();
@@ -103,6 +109,13 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
         this.bridgeUtil = new BridgeUtil(schema);
         typedArray.recycle();
     }
+
+	private void initSchema(String schema) {
+		if (schema == null) {
+			schema = "schema";
+		}
+		this.bridgeUtil = new BridgeUtil(schema);
+	}
 
 	protected BridgeWebViewClient generateBridgeWebViewClient() {
         return new BridgeWebViewClient(this);
